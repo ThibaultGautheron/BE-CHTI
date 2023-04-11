@@ -3,6 +3,7 @@
 		
 	export CallbackSon
 	export SortieSon
+	export StartSon
 	import LongueurSon
 	import Son
 	import PWM_Set_Value_TIM3_Ch3
@@ -73,6 +74,14 @@ Sortie ; si position >= LongueurSon
 	ENDP
 
 
+
+
+StartSon PROC
+	ldr r2,=position
+	mov r0,#0
+	strh r0,[r2]
+	bx lr
+	ENDP
 		
 		
 	END	

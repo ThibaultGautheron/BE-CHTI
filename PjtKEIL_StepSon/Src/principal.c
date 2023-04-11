@@ -1,7 +1,7 @@
 
 
 #include "DriverJeuLaser.h"
-void CallbackSon(void);
+#include "GestionSon.h"
 
 
 int main(void)
@@ -20,6 +20,14 @@ Active_IT_Debordement_Timer(TIM4,2,CallbackSon);
 	
 PWM_Init_ff( TIM3, 3, 720 );
 GPIO_Configure(GPIOB, 0, OUTPUT, ALT_PPULL);
+
+	
+	
+Systick_Period_ff(15000000);
+Systick_Prio_IT( 1, StartSon ); //On met a priorité 1, ça va de 0->priorité max à 15	
+
+SysTick_On;
+SysTick_Enable_IT;
 
 	
 //============================================================================	
