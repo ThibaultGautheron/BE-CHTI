@@ -1,7 +1,11 @@
 	PRESERVE8
 	THUMB   
 		
-
+	import LeSignal
+	export PartieReelle
+	export PartieImaginaire
+	export ModuleAuCarre
+	export DFT_ModuleAuCarre
 ; ====================== zone de réservation de données,  ======================================
 ;Section RAM (read only) :
 	area    mesdata,data,readonly
@@ -10,7 +14,10 @@
 ;Section RAM (read write):
 	area    maram,data,readwrite
 		
-
+PartieReelle dcw 0
+PartieImaginaire dcw 0
+ModuleAuCarre dcw 0
+	
 	
 ; ===============================================================================================
 	
@@ -22,6 +29,64 @@
 ; écrire le code ici		
 
 
+DFT_ModuleAuCarre PROC
+	; r0 -> adresse du premier echantillon du signal
+	; r1 = k, frequence normalisee
+	
+	;on doit d'abord sauver tous les registres au dessus de r3
+	push {r4,r5,r6,r7,r8,r9,r10}
+	
+	mov r2, #0 ; index n
+	mov r3, #0 ; PartieReelle
+	mov r4, #0 ; PartieImaginaire
+	ldr r5,=TabCos
+	ldr r6,=TabSin
+	
+Boucle
+
+	ldrsh r7,[r0,r2,lsl #1] ; load x(n)
+	mul r8,r2,r1 ; r8 = p = k*n
+	mov r11,#63 ; masque pour faire le modulo (on garde 6 derniers bits)
+	and r8,r8,r11
+	ldrsh r9, [r5,r8,lsl #1] ;load TabCos(p)
+	ldrsh r10, [r6,r8,lsl #1] ;load TabSin(p)
+	
+	mul r9,r9,r7
+	add r3,r3,r9
+	
+	mul r10,r10,r7
+	add r4,r4,r10
+	
+	
+	
+	add r2,r2,#1
+	cmp r2,#64
+	bne Boucle ;----------Fin Boucle
+
+	ldr r5,=PartieReelle ; format 5.27
+	str r3,[r5]
+	 
+	ldr r6,=PartieImaginaire ; format 5.27
+	str r4,[r6]
+	
+	;calcul modulo
+	
+	umull r1,r0,r3,r3
+	umlal r1,r0,r4,r4
+	
+	
+	ldr r7,=ModuleAuCarre ; format 5.27
+	str r0,[r7]
+	
+		
+	
+	
+	
+	
+	pop {r4,r5,r6,r7,r8,r9,r10}
+	
+	bx lr
+	ENDP
 
 
 
