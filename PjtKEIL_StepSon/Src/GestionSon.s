@@ -33,7 +33,7 @@ position dcw 0
 
 CallbackSon PROC
 	push {lr}
-	
+	push {r4,r5,r6,r7,r8,r9}
 	ldr r1,=LongueurSon
 	ldr r2,=position
 	ldr r3,[r2]
@@ -68,6 +68,7 @@ CallbackSon PROC
 	
 	
 Sortie ; si position >= LongueurSon
+	pop {r4,r5,r6,r7,r8,r9}
 	pop {lr}
 	bx lr
 	

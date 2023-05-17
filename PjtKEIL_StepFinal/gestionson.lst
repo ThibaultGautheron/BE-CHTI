@@ -1,0 +1,241 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 PRESERVE8
+    2 00000000                 THUMB
+    3 00000000         
+    4 00000000                 export           CallbackSon
+    5 00000000                 export           SortieSon
+    6 00000000                 export           StartSon
+    7 00000000                 import           LongueurSon
+    8 00000000                 import           Son
+    9 00000000                 import           PWM_Set_Value_TIM3_Ch3
+   10 00000000         ; ====================== zone de réservation de données,
+                         ======================================
+   11 00000000         ;Section RAM (read only) :
+   12 00000000                 area             mesdata,data,readonly
+   13 00000000         
+   14 00000000         
+   15 00000000         ;Section RAM (read write):
+   16 00000000                 area             maram,data,readwrite
+   17 00000000         
+   18 00000000 00 00   SortieSon
+                               dcw              0
+   19 00000002         
+   20 00000002 00 00   position
+                               dcw              0
+   21 00000004         
+   22 00000004         
+   23 00000004         
+   24 00000004         ; ======================================================
+                       =========================================
+   25 00000004         
+   26 00000004         
+   27 00000004         
+   28 00000004         
+   29 00000004         ;Section ROM code (read only) :  
+   30 00000004                 area             moncode,code,readonly
+   31 00000000         ; écrire le code ici  
+   32 00000000         
+   33 00000000         
+   34 00000000         CallbackSon
+                               PROC
+   35 00000000 B500            push             {lr}
+   36 00000002 E92D 03F0       push             {r4,r5,r6,r7,r8,r9}
+   37 00000006 4913            ldr              r1,=LongueurSon
+   38 00000008 4A13            ldr              r2,=position
+   39 0000000A 6813            ldr              r3,[r2]
+   40 0000000C 680C            ldr              r4,[r1]
+   41 0000000E         
+   42 0000000E 42A3            cmp              r3,r4
+   43 00000010 DA15            bge              Sortie      ; if (position >= L
+                                                            ongueurSon)
+   44 00000012         
+   45 00000012 4D12            ldr              r5,=Son
+   46 00000014 F935 6013       ldrsh            r6,[r5,r3,lsl #1] ; chargement 
+                                                            de la valeur de Son
+                                                            [position]
+   47 00000018 F44F 77B4       ldr              r7,=360
+   48 0000001C F249 1893       ldr              r8,=37267
+   49 00000020         
+   50 00000020         
+   51 00000020         ; on fait : son[position]* (360/37267)+360
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   52 00000020 FB06 F607       mul              r6,r6,r7
+   53 00000024 FB96 F6F8       sdiv             r6,r6,r8
+   54 00000028 443E            add              r6,r6,r7
+   55 0000002A         
+   56 0000002A F8DF 9034       ldr              r9,=SortieSon
+   57 0000002E F8A9 6000       strh             r6,[r9]
+   58 00000032         
+   59 00000032 F103 0301       add              r3,r3,#1
+   60 00000036 8013            strh             r3,[r2]     ; on incremente pos
+                                                            ition
+   61 00000038         
+   62 00000038         
+   63 00000038         
+   64 00000038 4630            mov              r0,r6
+   65 0000003A F7FF FFFE       bl               PWM_Set_Value_TIM3_Ch3
+   66 0000003E         
+   67 0000003E         
+   68 0000003E         
+   69 0000003E         
+   70 0000003E         Sortie                               ; si position >= Lo
+                                                            ngueurSon
+   71 0000003E E8BD 03F0       pop              {r4,r5,r6,r7,r8,r9}
+   72 00000042 F85D EB04       pop              {lr}
+   73 00000046 4770            bx               lr
+   74 00000048         
+   75 00000048                 ENDP
+   76 00000048         
+   77 00000048         
+   78 00000048         
+   79 00000048         
+   80 00000048         StartSon
+                               PROC
+   81 00000048 4A03            ldr              r2,=position
+   82 0000004A F04F 0000       mov              r0,#0
+   83 0000004E 8010            strh             r0,[r2]
+   84 00000050 4770            bx               lr
+   85 00000052                 ENDP
+   86 00000052         
+   87 00000052         
+   88 00000052                 END
+              00 00 00000000 
+              00000000 
+              00000000 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
+ork --depend=.\obj\gestionson.d -o.\obj\gestionson.o -I.\RTE\_CibleSondeKEIL -I
+C:\Programdata\Keil\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include -IC:\Programda
+ta\Keil\Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\Include --predefine="__EVAL S
+ETA 1" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 534"
+ --predefine="_RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --predefine="_RTE
+_ SETA 1" --list=gestionson.lst ..\PjtKEIL_StepSon\Src\GestionSon.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+mesdata 00000000
+
+Symbol: mesdata
+   Definitions
+      At line 12 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      None
+Comment: mesdata unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+SortieSon 00000000
+
+Symbol: SortieSon
+   Definitions
+      At line 18 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      At line 5 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+      At line 56 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+
+maram 00000000
+
+Symbol: maram
+   Definitions
+      At line 16 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      None
+Comment: maram unused
+position 00000002
+
+Symbol: position
+   Definitions
+      At line 20 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      At line 38 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+      At line 81 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+CallbackSon 00000000
+
+Symbol: CallbackSon
+   Definitions
+      At line 34 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      At line 4 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+Comment: CallbackSon used once
+Sortie 0000003E
+
+Symbol: Sortie
+   Definitions
+      At line 70 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      At line 43 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+Comment: Sortie used once
+StartSon 00000048
+
+Symbol: StartSon
+   Definitions
+      At line 80 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      At line 6 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+Comment: StartSon used once
+moncode 00000000
+
+Symbol: moncode
+   Definitions
+      At line 30 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      None
+Comment: moncode unused
+4 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+LongueurSon 00000000
+
+Symbol: LongueurSon
+   Definitions
+      At line 7 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      At line 37 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+Comment: LongueurSon used once
+PWM_Set_Value_TIM3_Ch3 00000000
+
+Symbol: PWM_Set_Value_TIM3_Ch3
+   Definitions
+      At line 9 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      At line 65 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+Comment: PWM_Set_Value_TIM3_Ch3 used once
+Son 00000000
+
+Symbol: Son
+   Definitions
+      At line 8 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+   Uses
+      At line 45 in file ..\PjtKEIL_StepSon\Src\GestionSon.s
+Comment: Son used once
+3 symbols
+348 symbols in table
