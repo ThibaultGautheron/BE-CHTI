@@ -6,7 +6,7 @@
 	export PartieImaginaire
 	export ModuleAuCarre
 	export DFT_ModuleAuCarre
-; ====================== zone de réservation de données,  ======================================
+; ====================== zone de rÃ©servation de donnÃ©es,  ======================================
 ;Section RAM (read only) :
 	area    mesdata,data,readonly
 
@@ -26,7 +26,7 @@ ModuleAuCarre dcw 0
 		
 ;Section ROM code (read only) :		
 	area    moncode,code,readonly
-; écrire le code ici		
+; Ã©crire le code ici		
 
 
 DFT_ModuleAuCarre PROC
@@ -69,13 +69,13 @@ Boucle
 	ldr r6,=PartieImaginaire ; format 5.27
 	str r4,[r6]
 	
-	;calcul modulo
+	;calcul module
 	
 	smull r1,r0,r3,r3
 	smlal r1,r0,r4,r4
 	
 	
-	ldr r7,=ModuleAuCarre ; format 5.27
+	ldr r7,=ModuleAuCarre ; format 10.22
 	str r0,[r7]
 	
 		
